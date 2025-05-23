@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truth or Dare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle animated background particles */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            max-width: 500px;
+            padding: 2rem;
+        }
+
+        .game-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e1e1e;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-question {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #4a5568;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.4s forwards;
+        }
+
+        .game-button {
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            min-width: 140px;
+        }
+
+        .truth-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .dare-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .game-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .question-container {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .question-container.show {
+            display: block;
+        }
+
+        .question-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .question-card.dare::before {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .question-type {
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #2d3748;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .play-again-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .play-again-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .game-title {
+                font-size: 2.5rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+            
+            .game-button {
+                width: 200px;
+            }
+            
+            .question-card {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-title {
+                font-size: 2rem;
+            }
+            
+            .main-question {
+                font-size: 1.2rem;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <div id="main-screen">
+            <h1 class="game-title">Truth or Dare</h1>
+            <p class="main-question">Are you ready to reveal secrets or take on challenges?</p>
+            <div class="button-container">
+                <button class="game-button truth-btn" onclick="showQuestion('truth')">Truth</button>
+                <button class="game-button dare-btn" onclick="showQuestion('dare')">Dare</button>
+            </div>
+        </div>
+        
+        <div id="question-screen" class="question-container">
+            <div id="question-card" class="question-card">
+                <div id="question-type" class="question-type"></div>
+                <div id="question-text" class="question-text"></div>
+            </div>
+            <button class="play-again-btn" onclick="playAgain()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const truthQuestions = [
+            "What's the most embarrassing thing you've ever done?",
+            "What's a secret you've never told anyone?",
+            "Who was your first crush and why?",
+            "What's the biggest lie you've ever told?",
+            "What's your most irrational fear?",
+            "What's the worst thing you've done that you've never been caught for?",
+            "If you could change one thing about yourself, what would it be?",
+            "What's the most childish thing you still do?",
+            "What's a weird habit you have that others don't know about?",
+            "What's something you're glad your parents don't know about you?",
+            "What's the most trouble you've ever gotten into?",
+            "What's your biggest regret in life so far?",
+            "What's the strangest dream you've ever had?",
+            "What's something you've done that you're secretly proud of?",
+            "What's the most awkward situation you've ever been in?"
+        ];
+
+        const dareQuestions = [
+            "Do your best impression of a celebrity for 30 seconds.",
+            "Dance with no music for 1 minute.",
+            "Speak in an accent for the next 3 rounds.",
+            "Do 20 push-ups right now.",
+            "Sing the chorus of your favorite song.",
+            "Act like your favorite animal for 30 seconds.",
+            "Do a silly walk across the room.",
+            "Make up a 30-second commercial about an imaginary product.",
+            "Do your best runway model walk.",
+            "Pretend to be a news anchor and give a weather report.",
+            "Do the chicken dance.",
+            "Speak in rhymes for the next 2 minutes.",
+            "Do your best superhero pose and hold it for 30 seconds.",
+            "Pretend you're swimming through the room.",
+            "Do your most embarrassing dance move."
+        ];
+
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function showQuestion(type) {
+            const mainScreen = document.getElementById('main-screen');
+            const questionScreen = document.getElementById('question-screen');
+            const questionCard = document.getElementById('question-card');
+            const questionType = document.getElementById('question-type');
+            const questionText = document.getElementById('question-text');
+
+            // Hide main screen
+            mainScreen.style.opacity = '0';
+            mainScreen.style.transform = 'translateY(-20px)';
+            
+            setTimeout(() => {
+                mainScreen.style.display = 'none';
+                
+                // Set question content
+                const questions = type === 'truth' ? truthQuestions : dareQuestions;
+                const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+                
+                questionType.textContent = type.toUpperCase();
+                questionText.textContent = randomQuestion;
+                
+                // Update card styling
+                questionCard.className = `question-card ${type}`;
+                
+                // Show question screen
+                questionScreen.classList.add('show');
+                questionScreen.style.opacity = '1';
+                questionScreen.style.transform = 'translateY(0)';
+            }, 300);
+        }
+
+        function playAgain() {
+            const mainScreen = document.getElementById('main-screen');
+            const questionScreen = document.getElementById('question-screen');
+            
+            // Add pulse animation to button
+            event.target.classList.add('pulse');
+            
+            setTimeout(() => {
+                // Hide question screen
+                questionScreen.style.opacity = '0';
+                questionScreen.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    questionScreen.classList.remove('show');
+                    
+                    // Show main screen
+                    mainScreen.style.display = 'block';
+                    mainScreen.style.opacity = '1';
+                    mainScreen.style.transform = 'translateY(0)';
+                    
+                    // Remove pulse animation
+                    event.target.classList.remove('pulse');
+                }, 300);
+            }, 200);
+        }
+
+        // Initialize particles when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+        });
+    </script>
+</body>
+</html>
